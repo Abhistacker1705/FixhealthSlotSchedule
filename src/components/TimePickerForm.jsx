@@ -1,7 +1,7 @@
 import {useState} from 'react';
 import TimeRangePicker from './TimeRangePicker';
 import moment from 'moment';
-import {transformedSlots} from '../utils/TimeArrayTransform';
+import {transformedSlots} from '../utils/timeArrayTransform';
 
 // eslint-disable-next-line react/prop-types
 const TimePickerForm = ({selectedDate, dayNumber}) => {
