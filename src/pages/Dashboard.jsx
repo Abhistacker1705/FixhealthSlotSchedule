@@ -5,7 +5,6 @@ import SalesDashboard from '../components/SalesDashboard';
 import {useUser} from '../contexts/UserContext';
 const Dashboard = () => {
   const {user, updateUser} = useUser();
-  console.log(user);
 
   return (
     <>

@@ -4,7 +4,7 @@ const LoginForm = () => {
   const navigate = useNavigate();
 
   const {user, updateUser} = useUser();
-  console.log(user);
+
   const handleLogin = () => {
     console.log('Login details:', {name, user});
     navigate('/dashboard');
@@ -31,9 +31,9 @@ const LoginForm = () => {
           value={user.role}
           onChange={(e) => updateUser(user?.name, e.target.value)}
           className="w-full px-3 py-2  rounded-md text-[#00ACC1] placeholder-gray-400 focus:outline-none">
-          <option value="Physio">Physio</option>
-          <option value="Sales">Sales</option>
-          <option value="Patient">Patient</option>
+          <option value="physio">Physio</option>
+          <option value="sales">Sales</option>
+          <option value="patient">Patient</option>
         </select>
       </div>
 
