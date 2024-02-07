@@ -6,7 +6,6 @@ const LoginForm = () => {
   const {user, updateUser} = useUser();
 
   const handleLogin = () => {
-    console.log('Login details:', {name, user});
     navigate('/dashboard');
   };
 

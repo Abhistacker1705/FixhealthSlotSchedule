@@ -190,8 +190,6 @@
 }
 
 .activeDate {
-  position: relative;
-  z-index: 1000;
   background-color: #00acc1;
-  color: white;
+  color: yellow;
 }

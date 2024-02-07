@@ -1,13 +1,12 @@
+/* eslint-disable no-unused-vars */
 import {useState} from 'react';
 import TimeRangePicker from './TimeRangePicker';
 import moment from 'moment';
-import {transformedSlots} from '../utils/timeArrayTransform';
+import {transformedSlots} from '../utils/TimeArrayTransform';
 
 // eslint-disable-next-line react/prop-types
 const TimePickerForm = ({selectedDate, dayNumber}) => {
   const [timeRanges, setTimeRanges] = useState([{start: null, end: null}]);
-
-  console.log(moment(selectedDate).format('DD-MM-YYYY'), dayNumber);
 
   const handleRangeChange = (index, {start, end}) => {
     const newTimeRanges = [...timeRanges];
@@ -25,7 +24,6 @@ const TimePickerForm = ({selectedDate, dayNumber}) => {
   };
 
   const handleSubmit = async () => {
-    // eslint-disable-next-line no-unused-vars
     const availableSlots = transformedSlots(timeRanges);
     //can be submitted to backend
   };

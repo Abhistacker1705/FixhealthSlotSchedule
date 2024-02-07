@@ -7,10 +7,10 @@ import 'react-toastify/dist/ReactToastify.css';
 import './index.css';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
-  <React.StrictMode>
+  <React.Fragment>
     <ToastContainer />
     <UserProvider>
       <App />
     </UserProvider>
-  </React.StrictMode>
+  </React.Fragment>
 );

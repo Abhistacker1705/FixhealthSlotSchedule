@@ -49,8 +49,10 @@ const TimeRangePicker = ({idx, timeRanges, onRangeChange}) => {
       const startHour = startTime.hour();
       const disabledHours = Array.from({length: startHour}, (_, i) => i);
       return disabledHours;
+    } else {
+      const disabledHours = Array.from({length: 8}, (_, i) => i);
+      return disabledHours;
     }
-    return [];
   };
 
   const isTimeDifferenceValid = () => {

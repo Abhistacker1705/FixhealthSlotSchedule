@@ -8,7 +8,7 @@ const PatientDashboard = () => {
       <Navbar />
       <div className="max-h-screen">
         <h2 className="text-2xl font-bold ml-8 mt-8">Patient Dashboard</h2>
-        <div className="grid grid-cols-2 max-h-full">
+        <div className="grid grid-cols-2 max-h-full max-lg:flex flex-col">
           <WeekCalendar />
           <TimeSlotGrid />
         </div>

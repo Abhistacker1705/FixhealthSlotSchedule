@@ -12,7 +12,7 @@ const PhysioDashboard = () => {
       <Navbar />
       <div className="max-h-screen">
         <h2 className="text-2xl font-bold ml-8 mt-8">Physio Dashboard</h2>
-        <div className="grid grid-cols-2 max-h-full">
+        <div className="grid grid-cols-2 max-lg:flex flex-col max-h-full">
           <WeekCalendar onSelectDate={setDayNumber} setDate={setDate} />
           {dayNumber ? (
             <TimePickerForm selectedDate={date} dayNumber={dayNumber} />
