@@ -20,6 +20,7 @@ const SalesDashboard = () => {
             <TimeSlotGrid
               selectedTime={selectedTime}
               setSelectedTime={setSelectedTime}
+              dayNumber={dayNumber}
             />
           ) : null}
         </div>

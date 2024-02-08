@@ -6,12 +6,13 @@ import BookingModal from './BookingModal';
 import {toast} from 'react-toastify';
 
 const DoctorsTable = ({selectedTime, dayNumber}) => {
+  const [doctors, setDoctors] = useState([]);
   const [doctorsinSlot, setDoctorsinSlot] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [modalDoc, setModalDoc] = useState('');
+  const [modalDoc, setModalDoc] = useState({});
 
-  const handleOpenModal = (docName) => {
-    setModalDoc(docName);
+  const handleOpenModal = (doc) => {
+    setModalDoc(doc);
     setIsModalOpen(true);
   };
 
@@ -19,12 +20,13 @@ const DoctorsTable = ({selectedTime, dayNumber}) => {
     setIsModalOpen(false);
   };
 
-  const getDrsinSelectedTime = async () => {
-    const response = await axios.get(
-      'https://api.jsonbin.io/v3/b/65beffa3266cfc3fde8573da'
-    );
+  const getDoctors = async () => {
+    axios.get('https://doctorslots.onrender.com/doctors').then((response) => {
+      setDoctors(response.data);
+    });
+  };
 
-    const doctors = response.data.record.doctors;
+  const getDrsinSelectedTime = async () => {
     const matchingDoctors = doctors.filter((doctor) => {
       const dayNumberString = dayNumber.toString();
       const availabilityForDay = doctor.availability[dayNumberString];
@@ -34,29 +36,66 @@ const DoctorsTable = ({selectedTime, dayNumber}) => {
     setDoctorsinSlot(matchingDoctors);
   };
 
+  // kept in seprate use effect otherwise will call api on every render
+  useEffect(() => {
+    getDoctors();
+  }, []);
+
   useEffect(() => {
     getDrsinSelectedTime();
-  }, [dayNumber, selectedTime]);
+  }, [dayNumber, selectedTime, doctors]);
 
-  //handle booking doctor locally
-  const handleBookAppointment = () => {
-    const updatedDoctors = doctorsinSlot.map((doctor) => {
+  // to see if a slot is booked/not
+  const getbookedistrue = (doctor) => {
+    const selectedTimeSlot = doctor?.availability[dayNumber.toString()].filter(
+      (slot) => slot.start === selectedTime
+    );
+    return selectedTimeSlot[0]?.booked;
+  };
+
+  //availability update call
+  const updateAvailability = (updatedAvailability) => {
+    axios
+      .put(
+        `https://doctorslots.onrender.com/doctors/${modalDoc.id}/availability`,
+        {
+          availability: updatedAvailability,
+        }
+      )
+      .then(() => {
+        toast.success(
+          `Booked slot at ${selectedTime} with Dr.${modalDoc.name}`
+        );
+        getDoctors();
+      })
+      .catch(() =>
+        toast.error(
+          `Error Booking slot at ${selectedTime} with Dr.${modalDoc.name}`
+        )
+      );
+  };
+
+  //handle booking doctor
+  const handleBookAppointment = (remarks) => {
+    const updatedDoctors = doctors.map((doctor) => {
       if (doctor.id === modalDoc.id) {
         const updatedAvailability = {...doctor.availability};
-        updatedAvailability[dayNumber] = updatedAvailability[dayNumber].map(
-          (slot) => {
-            if (slot.start === selectedTime) {
-              return {...slot, booked: true};
-            }
-            return slot;
+        updatedAvailability[dayNumber] = updatedAvailability[
+          dayNumber.toString()
+        ].map((slot) => {
+          if (slot.start === selectedTime) {
+            return {...slot, booked: true, remarks: remarks};
           }
-        );
+          return slot;
+        });
+        updateAvailability(updatedAvailability);
+
         return {...doctor, availability: updatedAvailability};
       }
       return doctor;
     });
-    setDoctorsinSlot(updatedDoctors);
-    toast.success(`Booked slot at ${selectedTime} with Dr.${modalDoc}`);
+    setDoctors(updatedDoctors);
+
     handleCloseModal();
   };
 
@@ -81,15 +120,12 @@ const DoctorsTable = ({selectedTime, dayNumber}) => {
                 </td>
                 <td className="border-2 p-2">
                   <button
-                    onClick={() => handleOpenModal(doctor.name)}
+                    disabled={getbookedistrue(doctor)}
+                    onClick={() => handleOpenModal(doctor)}
                     className={`${
-                      doctor?.availability[dayNumber]?.booked
-                        ? `bg-red-500`
-                        : `bg-green-500`
+                      getbookedistrue(doctor) ? `bg-red-500` : `bg-green-500`
                     } text-white px-4 py-2 rounded`}>
-                    {doctor?.availability[dayNumber]?.booked
-                      ? 'Booked'
-                      : 'Book'}
+                    {getbookedistrue(doctor) ? 'Booked' : 'Book'}
                   </button>
                 </td>
               </tr>
@@ -106,7 +142,7 @@ const DoctorsTable = ({selectedTime, dayNumber}) => {
       <BookingModal
         isOpen={isModalOpen}
         onClose={handleCloseModal}
-        doctorName={modalDoc}
+        doctorName={modalDoc.name}
         onBookAppointment={handleBookAppointment}
       />
     </div>

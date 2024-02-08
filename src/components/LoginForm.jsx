@@ -1,12 +1,18 @@
 import {useUser} from '../contexts/UserContext';
 import {useNavigate} from 'react-router-dom';
+import {toast} from 'react-toastify';
 const LoginForm = () => {
   const navigate = useNavigate();
 
   const {user, updateUser} = useUser();
 
   const handleLogin = () => {
+    if (user.name.trim() === '') {
+      toast.error('Name field cannot be empty');
+      return;
+    }
     navigate('/dashboard');
+    toast.success(`Hi ${user.name}, Welcome to ${user.role} dashboard `);
   };
 
   return (

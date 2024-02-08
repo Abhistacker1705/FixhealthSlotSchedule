@@ -1,29 +1,28 @@
+import {useEffect, useState} from 'react';
+import axios from 'axios';
 /* eslint-disable react/prop-types */
-const TimeSlotGrid = ({selectedTime, setSelectedTime}) => {
-  const generateTimeValues = () => {
-    const startTime = new Date(2024, 0, 1, 8, 0);
-    const endTime = new Date(2024, 0, 1, 24, 0);
-    const timeGap = 15 * 60 * 1000;
+const TimeSlotGrid = ({selectedTime, setSelectedTime, dayNumber}) => {
+  const [doctors, setDoctors] = useState([]);
 
-    const timeValues = [];
+  const getDoctors = async () => {
+    axios.get('https://doctorslots.onrender.com/doctors').then((response) => {
+      setDoctors(response.data);
+    });
+  };
 
-    for (
-      let time = startTime;
-      time <= endTime;
-      time.setTime(time.getTime() + timeGap)
-    ) {
-      const formattedTime = time.toLocaleTimeString([], {
-        hour: '2-digit',
-        minute: '2-digit',
-        hour12: false,
-      });
-      timeValues.push(formattedTime);
-    }
+  useEffect(() => {
+    getDoctors();
+  }, []);
 
+  const getTimeValues = () => {
+    const doctorslotsaray = doctors?.map((doctor) =>
+      doctor?.availability[dayNumber.toString()]?.map((slot) => slot?.start)
+    );
+    const timeValues = new Set([...doctorslotsaray.flat().sort()]);
     return timeValues;
   };
 
-  const timeValues = new Array(...generateTimeValues());
+  const timeValues = new Array(...getTimeValues());
 
   const renderTimeButton = (time) => (
     <TimeButton
@@ -39,9 +38,15 @@ const TimeSlotGrid = ({selectedTime, setSelectedTime}) => {
       <h2 className="text-[#00ACC1] py-4 text-center">
         Select Available Time Slot
       </h2>
-      <div className="mt-4 grid grid-cols-4 gap-4 overflow-y-auto max-h-[45vh]">
-        {timeValues.map(renderTimeButton)}
-      </div>
+      {timeValues.length > 0 ? (
+        <div className="mt-4 grid grid-cols-4 gap-4 overflow-y-auto max-h-[45vh]">
+          {timeValues.map(renderTimeButton)}
+        </div>
+      ) : (
+        <div className="flex justify-center items-center h-[80%] ">
+          <h2 className="text-center text-white">No slots available</h2>
+        </div>
+      )}
     </div>
   );
 };

@@ -5,11 +5,11 @@ import '../TimeRangePicker.css';
 import {toast} from 'react-toastify';
 
 const TimeRangePicker = ({idx, timeRanges, onRangeChange}) => {
-  const [startTime, setStartTime] = useState();
-  const [endTime, setEndTime] = useState();
+  const [startTime, setStartTime] = useState(timeRanges[idx].start);
+  const [endTime, setEndTime] = useState(timeRanges[idx].end);
 
   useEffect(() => {
-    isTimeDifferenceValid();
+    isTimeDifferenceValid(timeRanges.end);
   }, [startTime, endTime]);
 
   const checkValidStartTime = () => {

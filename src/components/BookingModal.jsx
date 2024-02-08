@@ -9,7 +9,7 @@ const BookingModal = ({isOpen, onClose, doctorName, onBookAppointment}) => {
 
   const handleSubmit = () => {
     setRemarks(remarks);
-    onBookAppointment();
+    onBookAppointment(remarks);
     onClose();
   };
 

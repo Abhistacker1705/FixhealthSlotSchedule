@@ -4,7 +4,7 @@ const UserContext = createContext();
 
 // eslint-disable-next-line react/prop-types
 export const UserProvider = ({children}) => {
-  const [user, setUser] = useState({name: '', role: 'sales'});
+  const [user, setUser] = useState({name: 'Def User', role: 'physio'});
 
   const updateUser = (name, role) => {
     setUser({...user, name, role});
