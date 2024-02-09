@@ -61,17 +61,22 @@ const TimePickerForm = ({selectedDate, dayNumber}) => {
     });
   };
 
-  const handleSetAvailabilityforDay = () => {};
-
   const addNewDoctor = (newAvailability) => {
     const doc = {
       name: user.name,
       availability: newAvailability,
     };
-
+    toast.loading('Updating Doctor Slots');
     axios
       .post('https://doctorslots.onrender.com/doctors', doc)
-      .then((res) => toast.success(res.data.message));
+      .then(({response}) => {
+        toast.dismiss();
+        toast.success(response.data.message);
+      })
+      .catch(({response}) => {
+        toast.dismiss();
+        toast.error(response.data.message);
+      });
   };
 
   const handleSubmit = () => {
