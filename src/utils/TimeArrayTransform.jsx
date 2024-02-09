@@ -24,3 +24,37 @@ const transformTimeRangeToSlots = (timeRange) => {
 
   return slots;
 };
+
+export const slotsToTimeRanges = (slots) => {
+  if (!slots || !Array.isArray(slots) || slots.length === 0) {
+    return [{start: null, end: null}];
+  }
+
+  const timeRanges = [];
+  let currentRange = null;
+
+  for (const slot of slots) {
+    const start = moment(slot.start, 'HH:mm');
+    const end = moment(slot.end, 'HH:mm');
+
+    if (!currentRange) {
+      currentRange = {start, end};
+    } else {
+      // Check if the current slot is contiguous with the previous one
+      if (currentRange.end.isSame(start)) {
+        currentRange.end = end; // Extend the current range
+      } else {
+        // If not contiguous, push the current range and start a new one
+        timeRanges.push({start: currentRange.start, end: currentRange.end});
+        currentRange = {start, end};
+      }
+    }
+  }
+
+  // Push the last range if it exists
+  if (currentRange) {
+    timeRanges.push({start: currentRange.start, end: currentRange.end});
+  }
+
+  return timeRanges;
+};

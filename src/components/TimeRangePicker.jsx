@@ -9,7 +9,12 @@ const TimeRangePicker = ({idx, timeRanges, onRangeChange}) => {
   const [endTime, setEndTime] = useState(timeRanges[idx].end);
 
   useEffect(() => {
-    isTimeDifferenceValid(timeRanges.end);
+    setStartTime(timeRanges[idx].start);
+    setEndTime(timeRanges[idx].end);
+  }, [timeRanges]);
+
+  useEffect(() => {
+    isTimeDifferenceValid();
   }, [startTime, endTime]);
 
   const checkValidStartTime = () => {
@@ -20,6 +25,7 @@ const TimeRangePicker = ({idx, timeRanges, onRangeChange}) => {
       }
     }
   };
+
   useEffect(() => {
     checkValidStartTime();
   }, [startTime]);

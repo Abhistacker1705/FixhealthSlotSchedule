@@ -2,16 +2,17 @@
 import {useEffect, useState} from 'react';
 import TimeRangePicker from './TimeRangePicker';
 import moment from 'moment';
-import {transformedSlots} from '../utils/TimeArrayTransform';
+import {slotsToTimeRanges, transformedSlots} from '../utils/TimeArrayTransform';
 import axios from 'axios';
 import {toast} from 'react-toastify';
 
 import {useUser} from '../contexts/UserContext';
 
 // eslint-disable-next-line react/prop-types
-const TimePickerForm = ({selectedDate, dayNumber}) => {
+const TimePickerForm = ({selectedDate, dayNumber, availability}) => {
   const {user, updateUser} = useUser();
-  const [availability, setAvailability] = useState({
+
+  const [timeRanges, setTimeRanges] = useState({
     ['1']: [],
     ['2']: [],
     ['3']: [],
@@ -20,18 +21,18 @@ const TimePickerForm = ({selectedDate, dayNumber}) => {
     ['6']: [],
   });
 
-  const [timeRanges, setTimeRanges] = useState({
-    ['1']: [{start: null, end: null, booked: false}],
-    ['2']: [{start: null, end: null, booked: false}],
-    ['3']: [{start: null, end: null, booked: false}],
-    ['4']: [{start: null, end: null, booked: false}],
-    ['5']: [{start: null, end: null, booked: false}],
-    ['6']: [{start: null, end: null, booked: false}],
-  });
+  useEffect(() => {
+    setTimeRanges((prevTimeRanges) => {
+      const newTimeRanges = {...prevTimeRanges}; // Create a copy of the current timeRanges state
 
-  // useEffect(() => {
-  //   addNewDoctor();
-  // }, [availability]);
+      for (const day in availability) {
+        const availableTimeRanges = slotsToTimeRanges(availability[day]);
+        newTimeRanges[day] = availableTimeRanges; // Update the timeRanges for the current day
+      }
+
+      return newTimeRanges; // Return the updated timeRanges
+    });
+  }, [availability]);
 
   const handleRangeChange = (index, {start, end}) => {
     setTimeRanges((prevTimeRanges) => {
@@ -69,11 +70,11 @@ const TimePickerForm = ({selectedDate, dayNumber}) => {
     toast.loading('Updating Doctor Slots');
     axios
       .post('https://doctorslots.onrender.com/doctors', doc)
-      .then(({response}) => {
+      .then((response) => {
         toast.dismiss();
         toast.success(response.data.message);
       })
-      .catch(({response}) => {
+      .catch((response) => {
         toast.dismiss();
         toast.error(response.data.message);
       });
@@ -102,7 +103,9 @@ const TimePickerForm = ({selectedDate, dayNumber}) => {
       </h2>
       <div className="flex flex-col h-[45vh] gap-4 overflow-y-auto">
         {timeRanges[dayNumber.toString()]?.map((timeRange, index) => (
-          <div key={dayNumber.toString()[index]} className="flex items-end">
+          <div
+            key={`${dayNumber.toString()}-${index}`}
+            className="flex items-end">
             <TimeRangePicker
               idx={index}
               timeRanges={timeRanges[dayNumber.toString()]}
